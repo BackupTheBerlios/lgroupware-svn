@@ -1,0 +1,76 @@
+Linoratix Groupware  - Suite
+----------------------------
+
+So paar Sachen die es koennen muss.
+
+
+- Projektmanagement
+  - Startzeit, Endzeit
+  - Kostenplanung mit verschiedenen Teams
+  
+  - Team's
+     - Personen
+        - kosten der person
+  
+  - email benachrichtigungen und so zeug
+  - aufgaben / tasks
+  - aufgaben delegieren / ueberwachen
+  
+  - gantt (sowas in der art von mr. projekt/planner)
+     - pfad der verschiedenen aufgaben im projekt
+        - aufgabe a muss vor aufgabe b gemacht werden und a dauert 50 minuten, b 30 minuten usw.
+
+  - milestone sachen        
+  - support für svn (und cvs vielleicht)
+  - wichtig: möglichkeit an alles mögliche (notiz, aufgabe, ...) dateien anzuhängen und notizen hinzuschreiben
+
+- kontaktmanagement
+  - mit ldap (openldap server) 
+  - telefonmanagement
+     - aufzeichnen von telefongesprächen (also zusammenfassung des telefonierers)
+
+- teammanagement
+  - chat sowas wie icq (vielleicht jabber?) 
+  - chat sowas wie irc (vielleicht irc ;-))
+
+- personenmanagement
+  - lohnkosten rechnung
+
+- kalender
+  - jabber support (also bei termin email und/oder jabber nachricht)
+  - urlaubsplanung
+  - feiertage frei waehlbar
+  
+
+- kunden management
+  - projekte kunden zuordnen
+  - budget management
+     - was passiert wenn budget aufgebraucht?
+  - 
+
+
+Programmierung:
+---------------
+java naming directory interface
+xml datenaustausch
+datenbank: postgresql
+
+
+Vorgehensweise:
+---------------
+
+Was wird benoetigt:
+-------------------
+
+Libraries:
+----------
+
+- icalendar (Calendar Dateien die auch z.b. Evolution, Outlook, ... lesen kann) (<= nachvollger von vcalendar)
+- ldap adressverwaltung mit dem mozilla schema
+- webdav
+
+
+
+
+
+

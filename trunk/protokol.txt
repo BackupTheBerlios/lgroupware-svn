@@ -1,0 +1,44 @@
+Das Server Protokol:
+--------------------
+
+Features:
+---------
+
+- Pluginfaehigkeit / Einfach erweiterbar
+- binary-safe
+- xml
+- verschluesselung / ssl
+- komprimiert (gzip)
+
+
+<!-- die authentifizierung -->
+<?xml version="1.0" encoding="UTF-8"?>
+<lgw>
+	<plugin name="auth">
+		<username>admin</username>
+		<password>test</password>
+	</plugin>
+</lgw>
+
+Antwort:
+<?xml version="1.0" encoding="UTF-8"?>
+<lgw>
+	<plugin name="auth">
+		<return>
+			true/false
+		</return>
+	</plugin>
+	<set>
+		<!-- Bei erfolg cookie setzten -->
+		<cookie name="session" value="session-id" />
+	</set>
+</lgw>
+
+<!-- nach der authentifizierung wird ein "cookie" gespeichert -->
+<?xml version="1.0" encoding="UTF-8"?>
+<lgw>
+	<plugin name="calendar">
+		<!-- calendar xml-rpc -->
+	</plugin>
+	<cookie name="session"  value="session-id" />
+</lgw>
