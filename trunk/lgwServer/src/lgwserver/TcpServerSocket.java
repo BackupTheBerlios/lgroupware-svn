@@ -12,6 +12,7 @@ package lgwserver;
 
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
 import org.jdom.*;
 
@@ -28,6 +29,8 @@ public class TcpServerSocket extends Thread
     protected ClientPool allClients;
     
     protected String clientIP;
+    
+    public Map<Object, Object> pluginHash;
     
     /** Creates a new instance of TcpServerSocket */
     public TcpServerSocket(Socket sock, String clnt, ClientPool clients) 
@@ -61,14 +64,15 @@ public class TcpServerSocket extends Thread
             
             while((line = is.readLine()) != null)
             {
-                buffer += line + "\n";
+                if(! line.equalsIgnoreCase(""))
+                    buffer += line + "\n";
                 
                 if(line.compareTo("</lgw>") == 0)
                 {
                     // aktionen ausfuehren
                     //System.out.println(buffer);
                     //broadcast(clientIP, buffer);
-                    proto = new Protokol(new StringReader(buffer));
+                    proto = new Protokol(new StringReader(buffer), pluginHash);
                     buffer = "";
                     pw.println(proto.getXML());
                 }

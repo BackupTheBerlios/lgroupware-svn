@@ -30,13 +30,15 @@ public class Protokol
     protected boolean hasanswer = false;
     
     protected Object gui, prefs;
+    public Map<Object, Object> pluginHash;
     
     /** Creates a new instance of Protokol */
-    public Protokol(StringReader is, Object g, Object p)
+    public Protokol(StringReader is, Object g, Object p, Map<Object, Object> m)
         throws IOException, JDOMException
     {
         gui = g;
         prefs = p;
+        pluginHash = m;
         
         SAXBuilder builder = new SAXBuilder();
         builder.setValidation(false); // keine validierung weil keine gramatik
@@ -68,6 +70,7 @@ public class Protokol
             } else
             { // ein anderes plugin
                 System.out.println("Plugin: " + e.getAttributeValue("name"));
+                ((LgwPlugin)pluginHash.get(e.getAttributeValue("name"))).recieveEvent(doc);
             }
         }
     }

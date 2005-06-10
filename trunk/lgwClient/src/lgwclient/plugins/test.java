@@ -8,6 +8,9 @@ package lgwclient.plugins;
 
 import lgwclient.Preference;
 
+import org.jdom.*;
+import org.jdom.output.*;
+
 /**
  *
  * @author  jfried
@@ -21,12 +24,7 @@ public class test extends lgwclient.LgwPlugin
     
     public void recieveEvent(org.jdom.Document d)
     {
-        
-    }
-    
-    public org.jdom.Document sendEvent()
-    {
-        return new org.jdom.Document();
+        System.out.println("Hab WAS!!!!");
     }
     
     public javax.swing.JPanel getWorkspace()
@@ -48,19 +46,41 @@ public class test extends lgwclient.LgwPlugin
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jButton1 = new javax.swing.JButton();
+        btnTest = new javax.swing.JButton();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(jButton1, "jButton1");
-        add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 180, -1, -1));
+        org.openide.awt.Mnemonics.setLocalizedText(btnTest, "Plugin 1 Test Button");
+        btnTest.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTestActionPerformed(evt);
+            }
+        });
+
+        add(btnTest, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 140, -1, -1));
 
     }
     // </editor-fold>//GEN-END:initComponents
+
+    private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
+        doc = new Document();
+        Element root = new Element("lgw");
+        Element plugin = new Element("plugin");
+        Element plugin_message = new Element("message");
+        
+        plugin_message.setText("Test Test Test");
+        plugin.setAttribute("name", "test");
+        
+        plugin.addContent(plugin_message);
+        root.addContent(plugin);
+        doc.addContent(root);
+        
+        sendEvent();
+    }//GEN-LAST:event_btnTestActionPerformed
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnTest;
     // End of variables declaration//GEN-END:variables
     
 }

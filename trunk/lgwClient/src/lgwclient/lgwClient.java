@@ -27,6 +27,8 @@ public class lgwClient
    
    private String configFile;
    private ArrayList pluginList;
+   
+   protected Map<Object, Object> pluginHash;
     
     /** Creates a new instance of lgwClient */
     public lgwClient(String file) 
@@ -49,6 +51,7 @@ public class lgwClient
         
         sock.setGUI(clientGUI);
         sock.setPrefs(prefs);
+        sock.pluginHash = pluginHash;
         
         while(sock.isConnected() != true)
         {
@@ -82,6 +85,8 @@ public class lgwClient
        // {
             outp.setFormat(Format.getPrettyFormat());
             sock.send(outp.outputString(doc));
+
+            
             
             //outp.output(doc, sock.out);
             
@@ -108,6 +113,7 @@ public class lgwClient
         // Da kommen die dynamischen buttons rinn
         ArrayList btnList = new ArrayList();
         pluginList = new ArrayList();
+        pluginHash = new HashMap<Object, Object>();
         
         int starthoehe = 10;
         
@@ -137,8 +143,8 @@ public class lgwClient
             {
                 Class pluginClass = Class.forName("lgwclient.plugins." + e.getAttributeValue("name"));
                 Object pluginObject = pluginClass.newInstance();
-                pluginList.add((LgwPlugin)pluginObject);
-                
+                pluginHash.put(e.getAttributeValue("name"), pluginObject);
+                ((LgwPlugin)pluginHash.get(e.getAttributeValue("name"))).setNetworkSocket(sock);
             } catch(Exception ex)
             {
                 System.out.println("Verdammte Huedde!! Konnte Plugin nicht laden..." + ex);
@@ -151,8 +157,8 @@ public class lgwClient
     
     private void btnPluginClicked(java.awt.event.ActionEvent evt) 
     {
-        clientGUI.scrollPaneMainFrame.setViewportView((javax.swing.JPanel)pluginList.get(((PluginButton)evt.getSource()).getIndex()));
-    }   
+        clientGUI.scrollPaneMainFrame.setViewportView((javax.swing.JPanel)pluginHash.get(((PluginButton)evt.getSource()).pluginName));
+    }
     
     /**
      * @param args the command line arguments

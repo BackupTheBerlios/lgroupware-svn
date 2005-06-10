@@ -29,11 +29,6 @@ public class test2 extends lgwclient.LgwPlugin
         return this;
     }
 
-    public org.jdom.Document sendEvent()
-    {
-        return new org.jdom.Document();
-    }
-    
     /** Creates new form test2 */
     public test2() 
     {

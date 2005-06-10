@@ -32,18 +32,22 @@ public class Protokol
     protected String xmlDocument;
 
     protected Auth auth;
+    public Map<Object, Object> pluginHash;
     
     /**
      * Creates a new instance of Protokol 
      */
-    public Protokol(StringReader is)
+    public Protokol(StringReader is, Map<Object, Object> p)
         throws IOException, JDOMException
     {
+        pluginHash = p;
+        
         SAXBuilder builder = new SAXBuilder();
         builder.setValidation(false); // keine validierung weil keine gramatik
         builder.setIgnoringElementContentWhitespace(true);
-        doc = builder.build(is);
         
+        doc = builder.build(is);
+
         XPath pluginPath = XPath.newInstance("/lgw/plugin");
         List list = pluginPath.selectNodes(doc);
         
@@ -95,6 +99,8 @@ public class Protokol
             } else
             {
                 System.out.println("plugin: " + e.getAttributeValue("name"));
+                ((LgwPlugin)pluginHash.get(e.getAttributeValue("name"))).recieveEvent(doc);
+                answerDoc = ((LgwPlugin)pluginHash.get(e.getAttributeValue("name"))).sendEvent();
             }
         }
     }

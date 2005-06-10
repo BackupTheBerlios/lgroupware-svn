@@ -28,6 +28,8 @@ public class TcpClientSocket extends Thread
     private boolean connected;
     protected Object gui, prefs;
     
+    public Map<Object, Object> pluginHash;
+    
     /**
      * Abfragen ob die Verbindung bereits steht
      */
@@ -46,14 +48,15 @@ public class TcpClientSocket extends Thread
         {
             while((line = is.readLine()) != null)
             {
-                buffer += line + "\n";
+                if(! line.equalsIgnoreCase(""))
+                   buffer += line + "\n";
                 
                 if(line.compareTo("</lgw>") == 0)
                 {
                     // aktionen ausfuehren
                     //System.out.println(buffer);
                     //broadcast(clientIP, buffer);
-                    proto = new Protokol(new StringReader(buffer), gui, prefs);
+                    proto = new Protokol(new StringReader(buffer), gui, prefs, pluginHash);
                     buffer = "";
                     if(proto.hasAnswer() == true)
                     {

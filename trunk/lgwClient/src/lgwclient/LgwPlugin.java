@@ -10,12 +10,18 @@
 
 package lgwclient;
 
+import org.jdom.*;
+import org.jdom.output.*;
+
 /**
  *
  * @author jfried
  */
 public abstract class LgwPlugin extends javax.swing.JPanel
 {
+    protected org.jdom.Document doc;
+    protected TcpClientSocket sock;
+    
     /** Liefert ein Eigenschaften Objekt zurück mit allem möglichen
      * drin wie Text für den Button, Bildname usw.
      */
@@ -30,9 +36,22 @@ public abstract class LgwPlugin extends javax.swing.JPanel
     
     /** Sendet ein Event an den Server
      */
-    abstract public org.jdom.Document sendEvent();
+    public void sendEvent()
+    {
+        XMLOutputter outp = new XMLOutputter();
+        outp.setFormat(Format.getPrettyFormat());
+        System.out.println(outp.outputString(doc));
+        sock.send(outp.outputString(doc));
+    }
     
     /** Liefert den Workspace zurück
      */
     abstract public javax.swing.JPanel getWorkspace();
+    
+    /** den Netzwerksocket bekannt geben
+     */
+    public void setNetworkSocket(TcpClientSocket o)
+    {
+        sock = o;
+    }
 }
