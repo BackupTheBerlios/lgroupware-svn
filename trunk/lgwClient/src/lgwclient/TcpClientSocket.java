@@ -14,6 +14,7 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 import org.jdom.JDOMException;
+import org.jdom.*;
 
 /**
  *
@@ -23,6 +24,7 @@ public class TcpClientSocket extends Thread
 {
     protected Socket sock;
     protected BufferedReader is;
+    protected CookieContainer cookies;
     public PrintWriter out;
 
     private boolean connected;
@@ -56,8 +58,10 @@ public class TcpClientSocket extends Thread
                     // aktionen ausfuehren
                     //System.out.println(buffer);
                     //broadcast(clientIP, buffer);
-                    proto = new Protokol(new StringReader(buffer), gui, prefs, pluginHash);
+                    proto = new Protokol(new StringReader(buffer), gui, prefs, pluginHash, cookies);
                     buffer = "";
+                    cookies = proto.getCookies();
+                    
                     if(proto.hasAnswer() == true)
                     {
                         out.println(proto.getXML());
@@ -71,6 +75,11 @@ public class TcpClientSocket extends Thread
         {
             System.out.println("IO FEHLER: " + e);
         }
+    }
+    
+    public Map<Object, Object> getCookies()
+    {
+        return cookies.getAllCookies();
     }
     
     /** Client GUI setzten
@@ -98,6 +107,7 @@ public class TcpClientSocket extends Thread
     public TcpClientSocket(String server_name, int Port)
     {
         connected = false;
+        cookies = new CookieContainer();
         try
         {
             sock = new Socket(server_name, Port);

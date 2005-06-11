@@ -30,17 +30,18 @@ public class Protokol
 {
     protected Document doc, answerDoc;
     protected String xmlDocument;
-
+    protected Session session;
     protected Auth auth;
     public Map<Object, Object> pluginHash;
     
     /**
      * Creates a new instance of Protokol 
      */
-    public Protokol(StringReader is, Map<Object, Object> p)
+    public Protokol(StringReader is, Map<Object, Object> p, Session s)
         throws IOException, JDOMException
     {
         pluginHash = p;
+        session = s;
         
         SAXBuilder builder = new SAXBuilder();
         builder.setValidation(false); // keine validierung weil keine gramatik
@@ -80,7 +81,7 @@ public class Protokol
                     Element set = new Element("set");
                     Element cookie = new Element("cookie");
                     cookie.setAttribute("name", "session");
-                    cookie.setAttribute("value", "session-id"); // die session fehlt noch
+                    cookie.setAttribute("value", (String)session.get("session_id")); // die session fehlt noch
                     set.addContent(cookie);
                     root.addContent(set);
                     
@@ -104,6 +105,11 @@ public class Protokol
             }
         }
     }
+
+    public Session getSession()
+    {
+        return session;
+    }    
     
     /** Abfragen des Anwort XML
      */

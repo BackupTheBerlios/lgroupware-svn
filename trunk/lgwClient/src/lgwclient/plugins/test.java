@@ -64,16 +64,13 @@ public class test extends lgwclient.LgwPlugin
 
     private void btnTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTestActionPerformed
         doc = new Document();
-        Element root = new Element("lgw");
-        Element plugin = new Element("plugin");
+        plugin_root = new Element("plugin");
         Element plugin_message = new Element("message");
         
         plugin_message.setText("Test Test Test");
-        plugin.setAttribute("name", "test");
+        plugin_root.setAttribute("name", "test");
         
-        plugin.addContent(plugin_message);
-        root.addContent(plugin);
-        doc.addContent(root);
+        plugin_root.addContent(plugin_message);
         
         sendEvent();
     }//GEN-LAST:event_btnTestActionPerformed

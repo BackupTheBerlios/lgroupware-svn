@@ -25,7 +25,7 @@ public class TcpServerSocket extends Thread
     protected Socket clientSock;
     protected BufferedReader is;
     protected PrintWriter pw;
-    
+    protected Session session;
     protected ClientPool allClients;
     
     protected String clientIP;
@@ -37,7 +37,8 @@ public class TcpServerSocket extends Thread
     {
         clientSock = sock;
         clientIP = clnt;
-        
+        session = new Session();
+        session.set("client_ip", clientIP);
         try
         {
             is = new BufferedReader(
@@ -72,8 +73,10 @@ public class TcpServerSocket extends Thread
                     // aktionen ausfuehren
                     //System.out.println(buffer);
                     //broadcast(clientIP, buffer);
-                    proto = new Protokol(new StringReader(buffer), pluginHash);
+                    proto = new Protokol(new StringReader(buffer), pluginHash, session);
                     buffer = "";
+                    // Die veraenderte Session speichern
+                    session = proto.getSession();
                     pw.println(proto.getXML());
                 }
             }

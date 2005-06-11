@@ -26,19 +26,20 @@ public class Protokol
 {
     protected Document doc, answerDoc;
     protected String xmlDocument;
-    
+    protected CookieContainer cookies;
     protected boolean hasanswer = false;
     
     protected Object gui, prefs;
     public Map<Object, Object> pluginHash;
     
     /** Creates a new instance of Protokol */
-    public Protokol(StringReader is, Object g, Object p, Map<Object, Object> m)
+    public Protokol(StringReader is, Object g, Object p, Map<Object, Object> m, CookieContainer c)
         throws IOException, JDOMException
     {
         gui = g;
         prefs = p;
         pluginHash = m;
+        cookies = c;
         
         SAXBuilder builder = new SAXBuilder();
         builder.setValidation(false); // keine validierung weil keine gramatik
@@ -47,6 +48,21 @@ public class Protokol
         
         XPath pluginPath = XPath.newInstance("/lgw/plugin");
         List list = pluginPath.selectNodes(doc);
+        
+        // Cookies verarbeiten
+        XPath cookiePath = XPath.newInstance("/lgw/set/*");
+        List listSet = cookiePath.selectNodes(doc);
+        Iterator ci = listSet.iterator();
+        
+        while(ci.hasNext())
+        {
+            Element e = (Element)ci.next();
+            if(e.getName().equalsIgnoreCase("cookie"))
+            {
+                System.out.println("Cookie: " + e.getAttributeValue("name") + " || Value: " + e.getAttributeValue("value"));
+                cookies.add(e.getAttributeValue("name"), e.getAttributeValue("value"));
+            }
+        }
         
         answerDoc = new Document();
         Element root = new Element("lgw");
@@ -70,6 +86,7 @@ public class Protokol
             } else
             { // ein anderes plugin
                 System.out.println("Plugin: " + e.getAttributeValue("name"));
+                ((LgwPlugin)pluginHash.get(e.getAttributeValue("name"))).setCookies(cookies);
                 ((LgwPlugin)pluginHash.get(e.getAttributeValue("name"))).recieveEvent(doc);
             }
         }
@@ -80,6 +97,11 @@ public class Protokol
     public boolean hasAnswer()
     {
         return hasanswer;
+    }
+    
+    public CookieContainer getCookies()
+    {
+        return cookies;
     }
     
     /** Abfragen des Anwort XML

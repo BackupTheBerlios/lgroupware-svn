@@ -12,6 +12,8 @@ package lgwclient;
 
 import org.jdom.*;
 import org.jdom.output.*;
+import org.jdom.xpath.*;
+import java.util.*;
 
 /**
  *
@@ -21,6 +23,18 @@ public abstract class LgwPlugin extends javax.swing.JPanel
 {
     protected org.jdom.Document doc;
     protected TcpClientSocket sock;
+    protected CookieContainer cookies;
+    protected Element plugin_root;
+    
+    public void setCookies(CookieContainer c)
+    {
+        cookies = c;
+    }
+    
+    public CookieContainer getCookies()
+    {
+        return cookies;
+    }
     
     /** Liefert ein Eigenschaften Objekt zurück mit allem möglichen
      * drin wie Text für den Button, Bildname usw.
@@ -38,6 +52,24 @@ public abstract class LgwPlugin extends javax.swing.JPanel
      */
     public void sendEvent()
     {
+        Element root = new Element("lgw");
+        root.addContent(plugin_root);
+        
+        // cookies hinzufügen
+//        Map<Object, Object> allCookies = cookies.getAllCookies();
+        Map<Object, Object> allCookies = sock.getCookies();
+        Iterator i = allCookies.keySet().iterator();
+        while(i.hasNext())
+        {
+            String key = (String) i.next();
+            Element c = new Element("cookie");
+            c.setAttribute("name", key);
+            c.setAttribute("value", (String)allCookies.get(key));
+            root.addContent(c);
+        }
+        
+        doc.addContent(root);
+        
         XMLOutputter outp = new XMLOutputter();
         outp.setFormat(Format.getPrettyFormat());
         System.out.println(outp.outputString(doc));
