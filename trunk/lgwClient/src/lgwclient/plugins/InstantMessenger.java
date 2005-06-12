@@ -11,6 +11,8 @@ import lgwclient.Preference;
 import org.jdom.*;
 import org.jdom.output.*;
 
+import java.awt.Dimension;
+
 /**
  *
  * @author  jfried
@@ -37,6 +39,19 @@ public class InstantMessenger extends lgwclient.LgwPlugin
     {
         super();
         initComponents();
+        panelMessageView.setMinimumSize(new Dimension(300, 0));
+        scrollPeopleView.setMinimumSize(new Dimension(150, 0));
+        // clientliste holen
+        doc = new Document();
+        plugin_root = new Element("plugin");
+        Element plugin_get = new Element("get");
+        
+        plugin_get.setText("users");
+        plugin_root.setAttribute("name", "InstantMessenger");
+        
+        plugin_root.addContent(plugin_get);
+        
+//        sendEvent(); -- user abfrage auf einen extra thread legen
     }
     
     /** This method is called from within the constructor to
@@ -65,6 +80,12 @@ public class InstantMessenger extends lgwclient.LgwPlugin
 
         panelMessageView.add(txtMessageText, java.awt.BorderLayout.CENTER);
 
+        txtInputText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtInputTextKeyReleased(evt);
+            }
+        });
+
         panelMessageView.add(txtInputText, java.awt.BorderLayout.SOUTH);
 
         splitMainPane.setRightComponent(panelMessageView);
@@ -73,6 +94,10 @@ public class InstantMessenger extends lgwclient.LgwPlugin
 
     }
     // </editor-fold>//GEN-END:initComponents
+
+    private void txtInputTextKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtInputTextKeyReleased
+        
+    }//GEN-LAST:event_txtInputTextKeyReleased
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

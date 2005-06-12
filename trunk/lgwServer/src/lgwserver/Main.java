@@ -63,7 +63,7 @@ public class Main
                 Socket us = servSock.accept();
                 String hostName = us.getInetAddress().getHostName();
                 System.out.println("Verbindung von: " + hostName);
-                TcpServerSocket cl = new TcpServerSocket(us, hostName, clients);
+                TcpServerSocket cl = new TcpServerSocket(us, hostName, clients, prefs);
                 cl.pluginHash = pluginHash;
                 synchronized (clients)
                 {

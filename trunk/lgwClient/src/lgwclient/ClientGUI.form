@@ -34,11 +34,26 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="mnuEditPreferences">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Item"/>
+                <Property name="text" type="java.lang.String" value="Einstellungen"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="mnuEditPreferencesMouseEntered"/>
                 <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="mnuEditPreferencesMouseExited"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="mnuHelp">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&amp;Hilfe"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="mnuHelpUpdate">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Auf Updates prüfen"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuHelpUpdateActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.*;
 
 import org.jdom.*;
+import org.jdom.output.*;
 
 /**
  *
@@ -22,10 +23,16 @@ public class ClientGUI extends javax.swing.JFrame
     private String StatusBarStandardText = "Linoratix Groupware 0.1 -//- Client";
     protected Preference prefs;
     protected Thread t;
+    protected TcpClientSocket sock;
+    protected CookieContainer cookies;
     
     /** Creates new form ClientGUI */
-    public ClientGUI(Preference p) {
+    public ClientGUI(Preference p, TcpClientSocket s, CookieContainer c) {
+        sock = s;
+        cookies  = c;
+        
         initComponents();
+        
         lblStatusBar.setText(StatusBarStandardText);
         prefs = p;
         setBounds(0, 0, 640, 480);
@@ -56,6 +63,8 @@ public class ClientGUI extends javax.swing.JFrame
         mnuFileExit = new javax.swing.JMenuItem();
         mnuEdit = new javax.swing.JMenu();
         mnuEditPreferences = new javax.swing.JMenuItem();
+        mnuHelp = new javax.swing.JMenu();
+        mnuHelpUpdate = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("frmMain");
@@ -126,7 +135,7 @@ public class ClientGUI extends javax.swing.JFrame
             }
         });
 
-        org.openide.awt.Mnemonics.setLocalizedText(mnuEditPreferences, "Item");
+        org.openide.awt.Mnemonics.setLocalizedText(mnuEditPreferences, "Einstellungen");
         mnuEditPreferences.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 mnuEditPreferencesMouseEntered(evt);
@@ -140,11 +149,51 @@ public class ClientGUI extends javax.swing.JFrame
 
         mnuMainMenu.add(mnuEdit);
 
+        org.openide.awt.Mnemonics.setLocalizedText(mnuHelp, "&Hilfe");
+        org.openide.awt.Mnemonics.setLocalizedText(mnuHelpUpdate, "Auf Updates pr\u00fcfen");
+        mnuHelpUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuHelpUpdateActionPerformed(evt);
+            }
+        });
+
+        mnuHelp.add(mnuHelpUpdate);
+
+        mnuMainMenu.add(mnuHelp);
+
         setJMenuBar(mnuMainMenu);
 
         pack();
     }
     // </editor-fold>//GEN-END:initComponents
+
+    private void mnuHelpUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuHelpUpdateActionPerformed
+        Document doc = new Document();
+        Element root = new Element("lgw");
+        Element plugin = new Element("plugin");
+        plugin.setAttribute("name", "update");
+        Element version = new Element("version");
+        version.setText(((Element)prefs.getElement("/lgw/version")).getText());
+        plugin.addContent(version);
+        root.addContent(plugin);
+        System.out.println("sendEvent()");
+        Map<Object, Object> allCookies = cookies.getAllCookies();
+        Iterator i = allCookies.keySet().iterator();
+        while(i.hasNext())
+        {
+            String key = (String) i.next();
+            Element c = new Element("cookie");
+            c.setAttribute("name", key);
+            c.setAttribute("value", (String)allCookies.get(key));
+            root.addContent(c);
+        }        
+        doc.addContent(root);
+
+        XMLOutputter outp = new XMLOutputter();
+        outp.setFormat(Format.getPrettyFormat());
+        System.out.println(outp.outputString(doc));
+        sock.send(outp.outputString(doc));
+    }//GEN-LAST:event_mnuHelpUpdateActionPerformed
 
     private void mnuEditPreferencesMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mnuEditPreferencesMouseExited
         lblStatusBar.setText(StatusBarStandardText);
@@ -186,6 +235,8 @@ public class ClientGUI extends javax.swing.JFrame
     private javax.swing.JMenuItem mnuEditPreferences;
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenuItem mnuFileExit;
+    private javax.swing.JMenu mnuHelp;
+    private javax.swing.JMenuItem mnuHelpUpdate;
     private javax.swing.JMenuBar mnuMainMenu;
     public javax.swing.JPanel panelPaneAction;
     private javax.swing.JPanel panelStatusBar;

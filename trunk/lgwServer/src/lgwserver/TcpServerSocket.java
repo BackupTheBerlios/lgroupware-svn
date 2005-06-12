@@ -25,16 +25,17 @@ public class TcpServerSocket extends Thread
     protected Socket clientSock;
     protected BufferedReader is;
     protected PrintWriter pw;
-    protected Session session;
+    public Session session;
     protected ClientPool allClients;
-    
+    protected Preference prefs;
     protected String clientIP;
     
     public Map<Object, Object> pluginHash;
     
     /** Creates a new instance of TcpServerSocket */
-    public TcpServerSocket(Socket sock, String clnt, ClientPool clients) 
+    public TcpServerSocket(Socket sock, String clnt, ClientPool clients, Preference p) 
     {
+        prefs = p;
         clientSock = sock;
         clientIP = clnt;
         session = new Session();
@@ -73,10 +74,10 @@ public class TcpServerSocket extends Thread
                     // aktionen ausfuehren
                     //System.out.println(buffer);
                     //broadcast(clientIP, buffer);
-                    proto = new Protokol(new StringReader(buffer), pluginHash, session);
+                    proto = new Protokol(new StringReader(buffer), pluginHash, session, prefs);
                     buffer = "";
                     // Die veraenderte Session speichern
-                    session = proto.getSession();
+                    // session = proto.getSession();
                     pw.println(proto.getXML());
                 }
             }

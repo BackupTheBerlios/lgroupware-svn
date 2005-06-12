@@ -52,11 +52,14 @@ public abstract class LgwPlugin extends javax.swing.JPanel
      */
     public void sendEvent()
     {
+        System.out.println("sendEvent()");
         Element root = new Element("lgw");
         root.addContent(plugin_root);
+        doc = new org.jdom.Document();
         
         // cookies hinzufügen
 //        Map<Object, Object> allCookies = cookies.getAllCookies();
+        System.out.println("sendEvent()");
         Map<Object, Object> allCookies = sock.getCookies();
         Iterator i = allCookies.keySet().iterator();
         while(i.hasNext())
@@ -69,6 +72,8 @@ public abstract class LgwPlugin extends javax.swing.JPanel
         }
         
         doc.addContent(root);
+        
+        System.out.println("sendEvent(2)XMLOutputter");
         
         XMLOutputter outp = new XMLOutputter();
         outp.setFormat(Format.getPrettyFormat());

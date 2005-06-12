@@ -28,6 +28,7 @@ public class lgwClient
    private String configFile;
    private ArrayList pluginList;
    
+   protected CookieContainer cookies;
    protected Map<Object, Object> pluginHash;
     
     /** Creates a new instance of lgwClient */
@@ -35,6 +36,7 @@ public class lgwClient
     {
         String in;
         configFile = file;
+        cookies = new CookieContainer();
         
         BufferedReader is = new BufferedReader(
                 new InputStreamReader(System.in));
@@ -43,14 +45,16 @@ public class lgwClient
         
         sock = new TcpClientSocket(
                 prefs.getElement("/lgw/server/host").getTextTrim(), 
-                Integer.parseInt(prefs.getElement("/lgw/server/port").getTextTrim()));
+                Integer.parseInt(prefs.getElement("/lgw/server/port").getTextTrim()),
+                cookies,
+                prefs);
         sock.start();
         
-        clientGUI = new ClientGUI(prefs);
+        clientGUI = new ClientGUI(prefs, sock, cookies);
         loadPlugins();
         
         sock.setGUI(clientGUI);
-        sock.setPrefs(prefs);
+
         sock.pluginHash = pluginHash;
         
         while(sock.isConnected() != true)

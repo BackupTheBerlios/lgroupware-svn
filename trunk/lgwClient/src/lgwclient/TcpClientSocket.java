@@ -28,7 +28,8 @@ public class TcpClientSocket extends Thread
     public PrintWriter out;
 
     private boolean connected;
-    protected Object gui, prefs;
+    protected Object gui;
+    protected Preference prefs;
     
     public Map<Object, Object> pluginHash;
     
@@ -58,7 +59,7 @@ public class TcpClientSocket extends Thread
                     // aktionen ausfuehren
                     //System.out.println(buffer);
                     //broadcast(clientIP, buffer);
-                    proto = new Protokol(new StringReader(buffer), gui, prefs, pluginHash, cookies);
+                    proto = new Protokol(new StringReader(buffer), gui, prefs, pluginHash, cookies, out);
                     buffer = "";
                     cookies = proto.getCookies();
                     
@@ -92,10 +93,10 @@ public class TcpClientSocket extends Thread
     
     /** Preference klasse setzten
      */
-    public void setPrefs(Object o)
+   /* public void setPrefs(Object o)
     {
         prefs = o;
-    }
+    }*/
     
     public void send(String s)
     {
@@ -104,10 +105,11 @@ public class TcpClientSocket extends Thread
     }
     
     /** Creates a new instance of TcpClientSocket */
-    public TcpClientSocket(String server_name, int Port)
+    public TcpClientSocket(String server_name, int Port, CookieContainer c, Preference p)
     {
         connected = false;
-        cookies = new CookieContainer();
+        cookies = c;
+        prefs = p;
         try
         {
             sock = new Socket(server_name, Port);

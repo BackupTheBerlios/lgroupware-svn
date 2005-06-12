@@ -12,6 +12,7 @@ package lgwclient;
 
 import java.io.*;
 import java.util.*;
+import java.util.zip.*;
 
 import org.jdom.*;
 import org.jdom.xpath.*;
@@ -29,17 +30,20 @@ public class Protokol
     protected CookieContainer cookies;
     protected boolean hasanswer = false;
     
-    protected Object gui, prefs;
+    protected PrintWriter out;
+    protected Object gui;
+    protected Preference prefs;
     public Map<Object, Object> pluginHash;
     
     /** Creates a new instance of Protokol */
-    public Protokol(StringReader is, Object g, Object p, Map<Object, Object> m, CookieContainer c)
+    public Protokol(StringReader is, Object g, Preference p, Map<Object, Object> m, CookieContainer c, PrintWriter pw)
         throws IOException, JDOMException
     {
         gui = g;
         prefs = p;
         pluginHash = m;
         cookies = c;
+        out = pw;
         
         SAXBuilder builder = new SAXBuilder();
         builder.setValidation(false); // keine validierung weil keine gramatik
@@ -78,11 +82,98 @@ public class Protokol
             { // authentifizierung
                 if(e.getChildText("return").equalsIgnoreCase("true") == true)
                 { // authentifiziernug erfolgreich
-                    ((ClientGUI)gui).lblStatusBarConnectionState.setText("Eingeloggt als: " + ((Preference)prefs).getElement("/lgw/auth/username").getTextTrim());
+                    ((ClientGUI)gui).lblStatusBarConnectionState.setText("Eingeloggt als: " + prefs.getElement("/lgw/auth/username").getTextTrim());
                 } else
                 { // authentifizierung fehlerhaft, verbindung beenden
                     
                 }
+            } else if(e.getAttributeValue("name").equalsIgnoreCase("update") == true)
+            {
+                List childlist = e.getChildren();
+                Iterator itch = childlist.iterator();
+                
+                while(itch.hasNext())
+                {
+                    Element che = (Element)itch.next();
+                    if(che.getName().equalsIgnoreCase("update") == true)
+                    {
+                        if(e.getChildTextTrim("update").equalsIgnoreCase("true") == true)
+                        { // ein update ist verfuegbar, als fragen wir auch nach dem update
+                            System.out.println("ein update ist verfügbar...");
+                            doc = new Document();
+                            Element plugin_message = new Element("update");
+                            plugin_message.setText("update_me");
+                            plugin.setAttribute("name", "update");
+
+                            plugin.addContent(plugin_message);
+                            // cookies hinzufügen
+                    //        Map<Object, Object> allCookies = cookies.getAllCookies();
+                            System.out.println("sendEvent()");
+                            Map<Object, Object> allCookies = cookies.getAllCookies();
+                            Iterator it = allCookies.keySet().iterator();
+                            root.addContent(plugin);
+                            while(it.hasNext())
+                            {
+                                String key = (String) it.next();
+                                Element c2 = new Element("cookie");
+                                c2.setAttribute("name", key);
+                                c2.setAttribute("value", (String)allCookies.get(key));
+                                root.addContent(c2);
+                            }
+
+                            doc.addContent(root);
+
+                            XMLOutputter outp = new XMLOutputter();
+                            outp.setFormat(Format.getPrettyFormat());
+                            System.out.println(outp.outputString(doc));
+                            out.println(outp.outputString(doc));
+                            out.flush();
+                        } else
+                        { // kein update verfuegbar
+                            System.out.println("kein update ist verfügbar...");
+                        }
+                    } else if(che.getName().equalsIgnoreCase("file") == true)
+                    {
+                        byte b[] = Base64.decode(che.getText().toCharArray());
+                        FileOutputStream fo = new FileOutputStream(((Element)prefs.getElement("/lgw/tmp_dir")).getText() + "/client.zip");
+                        fo.write(b);
+                        fo.close();
+                        
+                        try
+                        {
+                            BufferedOutputStream destination = null;
+                            FileInputStream finps = new FileInputStream(((Element)prefs.getElement("/lgw/tmp_dir")).getText() + "/client.zip");
+                            ZipInputStream zipinp = new ZipInputStream(new BufferedInputStream(finps));
+                            ZipEntry entry;
+                            while((entry = zipinp.getNextEntry()) != null) 
+                            {
+                                System.out.println("unzip: " + entry);
+                                if(entry.isDirectory() == true)
+                                {
+                                    new File(((Element)prefs.getElement("/lgw/install_dir")).getText() + "/" + entry.getName()).mkdirs();
+                                } else
+                                {
+                                    int count;
+                                    byte databuff[] = new byte[4096];
+                                    FileOutputStream fos = new FileOutputStream(((Element)prefs.getElement("/lgw/install_dir")).getText() + "/" + entry.getName());
+                                    destination = new BufferedOutputStream(fos, 4096);
+                                    while ((count = zipinp.read(databuff, 0, 4096)) != -1) 
+                                    {
+                                        destination.write(databuff, 0, count);
+                                    }
+                                    destination.flush();
+                                    destination.close();
+                                }
+                            }
+                            zipinp.close();
+                        } catch(Exception zipex)
+                        {
+                            System.out.println("Fehler beim entpacken des updates..." + zipex);
+                        }
+                    }
+                }
+                
+                System.out.println("update request");
             } else
             { // ein anderes plugin
                 System.out.println("Plugin: " + e.getAttributeValue("name"));
@@ -127,8 +218,8 @@ public class Protokol
     
     /** Preference klasse setzten
      */
-    public void setPrefs(Object o)
+/*    public void setPrefs(Object o)
     {
         prefs = o;
-    }
+    } */
 }
