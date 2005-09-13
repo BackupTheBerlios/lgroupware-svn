@@ -10,6 +10,7 @@ use UI::BoxSizer;
 use UI::SplitterWindow;
 use UI::Panel;
 use UI::Window;
+use UI::XmlResource;
 
 sub new {
 	my( $class, %params ) = @_;
@@ -31,10 +32,16 @@ sub new {
 	$self->{'window'}{'top'} = UI::Panel->new( parent => $self->{'main'}{'frame'}, id => -1 );
 
 	# create a splitter window for dynamic sizing of the working area
-	$self->{'window'}{'bottom'} = UI::SplitterWindow->new( $self->{'main'}{'frame'}, -1, UI::getDefaultPosition(), [300, 300], UI::getNoFullRepaintOnResize() | UI::getClipChildren() );
+	$self->{'window'}{'bottom'} = UI::SplitterWindow->new( 
+		parent => $self->{'main'}{'frame'}, 
+		id => -1, 
+		position => UI::getDefaultPosition(), 
+		dimension =>[300, 300], 
+		options => UI::getNoFullRepaintOnResize() | UI::getClipChildren() 
+		);
 
 	$self->{'window'}{'top'}->SetBackgroundColour( UI::getColour( 133, 133, 133 ) );
-	$self->{'window'}{'top'}->SetSize( -1, 150 );
+	$self->{'window'}{'top'}->SetSize( -1, 100 );
 
 	$self->{'main'}{'box'}->Add( $self->{'window'}{'top'}, 0, UI::getGrow() );
 	$self->{'main'}{'box'}->Add( $self->{'window'}{'bottom'}, 2, UI::getGrow() );
@@ -50,11 +57,24 @@ sub new {
 
 	$self->{'window'}{'bottom'}->SplitVertically( $self->{'workarea'}{'left'}, $self->{'workarea'}{'right'} );
 	
+	# menu
+	my( $mnu_res ) = UI::XmlResource->new();
+	$mnu_res->InitAllHandlers();
+	$mnu_res->Load( 'conf/toolbar.xrc' );
+	$self->{'main'}{'menu'} = $mnu_res->LoadMenuBar( 'mainmenu' );
+	
+	$self->{'main'}{'frame'}->SetMenuBar( $self->{'main'}{'menu'} );
+	UI::setEventMenu( $self->{'main'}{'frame'}, 'menu_file_exit', \&OnQuit );
+	
 	# run the application
 	$self->{'ui'} = UI::App->new( mainframe => $self->{'main'}{'frame'});
 	$self->{'ui'}->MainLoop();
 	
 	return $self;
+}
+
+sub OnQuit {
+	shift->Close( 1 );
 }
 
 1;

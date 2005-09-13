@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<resource>
+	<object class="wxMenuBar" name="mainmenu">
+		<style>wxMB_DOCKABLE</style>
+		<object class="wxMenu" name="menu_file">
+			<label>$Datei</label>
+			<style>wxMENU_TEAROFF</style>
+			<object class="wxMenuItem" name="menu_file_exit">
+				<label>B$eenden\tAlt-F4</label>
+			</object>
+		</object>
+	</object>
+</resource>

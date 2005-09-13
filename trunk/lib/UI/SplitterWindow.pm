@@ -7,7 +7,8 @@ use Wx;
 use base qw( Wx::SplitterWindow );
 
 sub new {
-	my( $self ) = shift->SUPER::new( @_ );
+	my( $class, %params ) = @_;
+	my( $self ) = $class->SUPER::new( $params{'parent'}, $params{'id'}, $params{'position'}, $params{'dimension'}, $params{'options'} );
 
 	return $self;
 }
